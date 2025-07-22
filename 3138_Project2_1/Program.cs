@@ -17,19 +17,28 @@ namespace _3138Project2_1
     class Program
     {
         const string XmlFile = @"..\..\..\global_economies.xml";
-
+        static XmlDocument doc;
         static void Main(string[] args)
         {
             Console.WriteLine("World Economic Data");
             Console.WriteLine("======================");
             try
             {
-                XmlDocument doc = new();
+                doc = new();
+                doc.Load(XmlFile);
 
                 while (true)
                 {
                     DisplayMenu();
                 }
+            }
+            catch (XmlException err)
+            {
+                Console.WriteLine($"\nXML ERROR: {err.Message}");
+            }
+            catch (XPathException err)
+            {
+                Console.WriteLine($"\nXPATH ERROR: {err.Message}");
             }
             catch (Exception ex)
             {
@@ -94,10 +103,17 @@ namespace _3138Project2_1
 
         public static void PrintRegionalSummary()
         {
-            //TO-DO
             Console.WriteLine("Select a region by number as shown below...\n");
-
+            XmlNodeList countryNames = doc.SelectNodes("/global_economies/region/@rname");
+            int count = 1;
+            foreach (XmlAttribute attr in countryNames)
+            {
+                Console.WriteLine(count + ". " + attr.Value);
+                count++;
+            }
             Console.Write("Enter a region #:");
+            string input = Console.ReadLine();
+            int regionNumber = int.Parse(input);
         }
 
         public static void PrintMetricForAllRegions()
@@ -112,6 +128,8 @@ namespace _3138Project2_1
             Console.WriteLine("6. Unemployment NTL %");
             Console.WriteLine("7. Unemployment IPO %");
             Console.Write("Enter a metric #");
+
+            XmlNodeList countryNames = doc.SelectNodes("/global_economies/region/@rname");
         }
     }
 }
